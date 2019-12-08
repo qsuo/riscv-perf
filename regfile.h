@@ -4,6 +4,7 @@
 
 #include <cstddef>
 
+using data_t = uint32_t;
 
 class RegFile
 {
@@ -11,12 +12,12 @@ public:
 
     struct Input
     {
-        uint32_t a1;
-        uint32_t a2;
-        uint32_t a3;
-        uint32_t wb_a;
+        uint8_t a1;
+        uint8_t a2;
+        uint8_t a3;
+        uint8_t wb_a;
         uint32_t wb_d;
-        uint32_t wb_we;
+        bool wb_we;
     }
 
     struct Output

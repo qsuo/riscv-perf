@@ -1,13 +1,17 @@
 
+#include <cassert>
+
 #include "imem.h"
 
-Imem::Imem(Memory* memory):
-    memory_(memory)
-{}
+void Imem::attachMemory(Memory* memory)
+{
+    assert(memory != nullptr);
+    memory_ = memory;
+}
 
-Output operate(Input& input)
+Imem::Output Imem::operate(Input& input)
 {
     uint32_t tmp = 0;
-    memory->read(input.a, &tmp, sizeof(tmp);
-    return tmp;
+    memory_->read(input.a, &tmp, sizeof(tmp));
+    return {tmp};
 }

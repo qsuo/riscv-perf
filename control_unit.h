@@ -4,8 +4,6 @@
 
 #include <unordered_map>
 
-#include "controlUnit.h"
-
 enum Opcode
 {
     OP_IMM      = 0b0010011,
@@ -46,9 +44,7 @@ public:
         int wbCtrl;
     };
 
-    using unordered_map<uint32_t, Output> = map;
-
-
+    using map = std::unordered_map<uint32_t, Output>;
 
     Output operate(Input& t);
 };

@@ -1,6 +1,6 @@
 
-#ifndef MEMORY_H
-#define MEMORY_H
+#ifndef I_MEMORY_H
+#define I_MEMORY_H
 
 #include "memory.h"
 
@@ -17,15 +17,15 @@ public:
     struct Output
     {
         uint32_t d;
-    }
+    };
 
-    Imem(Memory* memory);
-    void attachMemory(Memory* memory) {};
+    Imem() {}
+    void attachMemory(Memory* memory);
 
     Output operate(Input& input);
 
 private:
-    Memory* memory_;
+    Memory* memory_ = nullptr;
 };
 
-#endif
+#endif  // I_MEMORY_H

@@ -1,4 +1,5 @@
 #include "simulator.h"
+#include "decoder.h"
 
 Simulator::Simulator(uint32_t memory_size)
     : memory(memory_size)
@@ -31,6 +32,9 @@ void Simulator::doFetch()
         preg.pc += 4;
     pc.set(preg);
 }
+
+
+
 void Simulator::doDecode()
 {
 
@@ -46,11 +50,15 @@ void Simulator::doDecode()
 
     FetchReg freg = fetch_reg.get();
     MemoryReg mreg = memory_reg.get(); 
-    uint32_t mask1 = 0xf8000;
-    uint32_t mask2 = 0x1f00000;
+
+
+    Decoder decoder;
+    Decoder::Decoding decoding = decoder.getDecoding(freg.encoding);
+
+    Decoder::Type type = decoder.instrType[decoding.opcode];
     RegFile::Input in = {
-        .a1 = (freg.encoding & mask1) >> 15, 
-        .a2 = (freg.encoding & mask2) >> 20};
+        .a1 = decoding.rs1, 
+        .a2 = decoding.rs2};
     in.wb_a = mreg.wb_a;
     in.wb_d = mreg.wb_d;
     in.wb_we = mreg.wb_we;
@@ -58,20 +66,19 @@ void Simulator::doDecode()
     RegFile::Output out = regfile.operate(in);
     DecodeReg dreg;
     
-    uint32_t imm = 0;
     dreg.pc = freg.pc;
     dreg.rs1 = in.a1;
     dreg.rs2 = in.a2;
-    dreg.rd = freg.encoding & 0xf80;
+    dreg.rd = decoding.rd;
     dreg.d1 = out.d1;
     dreg.d2 = out.d2;
-    dreg.imm = imm;
+    dreg.imm = decoding.getImm(type);
 
     decode_reg.set(dreg);
 
 }
 
-/*
+
 void Simulator::doExecute()
 {
     if (decode_reg.isNop())
@@ -107,7 +114,7 @@ void Simulator::doExecute()
     // TODO: branches, signed/unsigned comparisons
 
 }
-*/
+
 void Simulator::doMemory()
 {
     if (execute_reg.isNop())

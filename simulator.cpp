@@ -49,8 +49,8 @@ void Simulator::doDecode()
     uint32_t mask1 = 0xf8000;
     uint32_t mask2 = 0x1f00000;
     RegFile::Input in = {
-        .a1 = freg.encoding & mask1, 
-        .a2 = freg.encoding & mask2};
+        .a1 = (freg.encoding & mask1) >> 15, 
+        .a2 = (freg.encoding & mask2) >> 20};
     in.wb_a = mreg.wb_a;
     in.wb_d = mreg.wb_d;
     in.wb_we = mreg.wb_we;

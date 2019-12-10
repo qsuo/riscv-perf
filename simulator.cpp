@@ -61,4 +61,12 @@ void Simulator::doWriteBack()
     regfile.operate(out);
 }
 
-bool Simulator::stall_condition() {}
+bool Simulator::stall_condition(DecodeReg& de, ExecuteReg& ex)
+{
+    bool res = ex.flags.insType == InsType::I_LD &&
+               de.flags.insType != InsType::I_JAL;
+    res &= (de.rs1 == ex.rd) ||
+           (de.rs2 == ex.rd && de.flags.aluSrc2 == 0);
+
+    return res;
+}

@@ -20,7 +20,7 @@ enum Opcode
 };
 
 enum AluOp { ADD, SUB };
-enum InType { ALU, LD, ST, JMP, BR };
+enum InsType { I_ALU, I_LD, I_ST, I_JAL, I_JALR, I_BR };
 
 class ControlUnit
 {
@@ -39,6 +39,7 @@ public:
         int memWe;
         int we;
         int wbCtrl;
+        int insType;
     };
 
     using map = std::unordered_map<uint32_t, Output>;

@@ -18,7 +18,7 @@ public:
     void doMemory();
     void doWriteBack();
 
-    bool stall_condition();
+    bool stall_condition(DecodeReg& de, ExecuteReg& ex);
 
 private:
     Memory memory;

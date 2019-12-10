@@ -19,11 +19,8 @@ enum Opcode
     SYSTEM      = 0b1110011
 };
 
-enum AluOp
-{
-    ADD,
-    SUB
-};
+enum AluOp { ADD, SUB };
+enum InType { ALU, LD, ST, JMP, BR };
 
 class ControlUnit
 {

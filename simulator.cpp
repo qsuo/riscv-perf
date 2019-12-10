@@ -33,7 +33,7 @@ void Simulator::doExecute()
 
 
     ExecuteReg out = {.pc = in.pc, .flags = in.flags, .alu_res = alu_res,
-                      .wd = src2, .wb_a = in.wb_a};
+                      .wd = src2, .rd = in.rd};
     execute_reg.set(out);
     // TODO: branches, signed/unsigned comparisons
 
@@ -49,7 +49,7 @@ void Simulator::doMemory()
     else if ((in.flags.we == 1) && (in.flags.wbCtrl == 1))
         memory.read(in.alu_res, &wb_d, sizeof(wb_d));  // Store
 
-    MemoryReg out = {in.pc, in.flags, in.wb_a, wb_d};
+    MemoryReg out = {in.pc, in.flags, in.rd, wb_d};
     memory_reg.set(out);
 
 }
@@ -57,8 +57,8 @@ void Simulator::doMemory()
 void Simulator::doWriteBack()
 {
     MemoryReg in = memory_reg.get();
-    RegFile::Input out = {0, 0, 0, in.wb_a, in.wb_d, in.flags.we};
+    RegFile::Input out = {0, 0, 0, in.rd, in.wb_d, in.flags.we};
     regfile.operate(out);
 }
 
-
+bool Simulator::stall_condition() {}

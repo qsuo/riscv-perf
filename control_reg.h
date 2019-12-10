@@ -37,11 +37,12 @@ struct DecodeReg
 {
     address_t pc;
     flags_t flags;
-    uint8_t wb_a;   // write back address
-    uint32_t d1;    // data
-    uint32_t d2;    // data
-    bool se;        // sign extension
-    uint32_t imm;   // type ?
+    uint8_t rs1;
+    uint8_t rs2;
+    uint8_t rd;     // write back reg
+    uint32_t d1;    // data1
+    uint32_t d2;    // data2
+    uint32_t imm;   // type
 };
 
 struct ExecuteReg
@@ -50,14 +51,14 @@ struct ExecuteReg
     flags_t flags;
     uint32_t alu_res;
     uint32_t wd;    // write data (for memory)
-    uint8_t wb_a;   // write back address
+    uint8_t rd;   // write back address
 };
 
 struct MemoryReg
 {
     address_t pc;
     flags_t flags;
-    uint8_t wb_a;   // write back address
+    uint8_t rd;   // write back address
     uint32_t wb_d;  // write back data (alu_res or result of memory read)
 };
 

@@ -18,6 +18,8 @@ public:
     void doMemory();
     void doWriteBack();
 
+    bool stall_condition();
+
 private:
     Memory memory;
     Imem i_mem;

@@ -12,6 +12,7 @@ class Simulator
 public:
     Simulator(uint32_t memory_size);
 
+    DecodeReg getDecoding();
     void doFetch();
     void doDecode();
     void doExecute();

@@ -16,10 +16,17 @@ public:
     ControlReg(RegType& data) : data_(data) {}
 
     RegType get() const { return data_; }
-    void set(RegType& data) { data_ = data; };
+    void set(RegType& data)
+    {
+        data_ = data;
+        isNop_ = false;
+    }
+    bool isNop() { return isNop_; }
+    void setNop() { isNop_ = true; }
 
 private:
     RegType data_;
+    bool isNop_ = true;
 };
 
 struct PCReg
@@ -50,6 +57,7 @@ struct ExecuteReg
     address_t pc;
     flags_t flags;
     uint32_t alu_res;
+    bool cmp_res;
     uint32_t wd;    // write data (for memory)
     uint8_t rd;   // write back address
 };

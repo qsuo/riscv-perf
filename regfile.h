@@ -11,12 +11,12 @@ public:
 
     struct Input
     {
-        uint8_t a1;
-        uint8_t a2;
-        uint8_t a3;
-        uint8_t wb_a;
+        uint32_t a1;
+        uint32_t a2;
+        uint32_t a3;
+        uint32_t wb_a;
         uint32_t wb_d;
-        bool wb_we;
+        uint32_t wb_we;
     };
 
     struct Output

@@ -23,7 +23,7 @@ public:
 
 private:
     Memory memory;
-    Imem i_mem;
+    Imem imem;
     RegFile regfile;
 
     ControlReg<PCReg> pc;

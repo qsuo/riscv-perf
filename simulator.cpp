@@ -3,18 +3,37 @@
 Simulator::Simulator(uint32_t memory_size)
     : memory(memory_size)
 {
-    i_mem.attachMemory(&memory);
+    imem.attachMemory(&memory);
 }
 
-DecodeReg Simulator::getDecoding()
+void Simulator::doFetch() 
 {
-    return {};  // Process fetch_reg
+    Imem::Input in = { .a = pc.get().pc };
+    Imem::Output out = imem.operate(in);
+
+    FetchReg freg = { 
+        .pc = pc.get().pc,
+        .encoding = out.d};
+    fetch_reg.set(freg);
+
+    PCReg preg;
+    ExecuteReg ereg = execute_reg.get();
+    DecodeReg dreg = decode_reg.get();
+    if(ereg.flags.insType == I_BR)
+        preg.pc = ereg.alu_res;
+    else if(dreg.flags.insType == I_JAL)
+        preg.pc = dreg.pc + (dreg.imm << 1);
+    /*
+    else if(dreg.flags.insType == I_JALR)
+        preg.pc = ereg.alu_res;
+    */
+    else
+        preg.pc += 4;
+    pc.set(preg);
 }
-
-void Simulator::doFetch() {}
-
 void Simulator::doDecode()
 {
+
     ExecuteReg ex = execute_reg.get();
     if ((ex.flags.insType == I_BR && ex.cmp_res) ||
         ex.flags.insType == I_JALR || fetch_reg.isNop())
@@ -22,12 +41,37 @@ void Simulator::doDecode()
         decode_reg.setNop();
         return;
     }
-
-    DecodeReg de = getDecoding();
-    decode_reg.set(de);
     // TODO: Bypasses
+
+
+    FetchReg freg = fetch_reg.get();
+    MemoryReg mreg = memory_reg.get(); 
+    uint32_t mask1 = 0xf8000;
+    uint32_t mask2 = 0x1f00000;
+    RegFile::Input in = {
+        .a1 = freg.encoding & mask1, 
+        .a2 = freg.encoding & mask2};
+    in.wb_a = mreg.wb_a;
+    in.wb_d = mreg.wb_d;
+    in.wb_we = mreg.wb_we;
+
+    RegFile::Output out = regfile.operate(in);
+    DecodeReg dreg;
+    
+    uint32_t imm = 0;
+    dreg.pc = freg.pc;
+    dreg.rs1 = in.a1;
+    dreg.rs2 = in.a2;
+    dreg.rd = freg.encoding & 0xf80;
+    dreg.d1 = out.d1;
+    dreg.d2 = out.d2;
+    dreg.imm = imm;
+
+    decode_reg.set(dreg);
+
 }
 
+/*
 void Simulator::doExecute()
 {
     if (decode_reg.isNop())
@@ -63,7 +107,7 @@ void Simulator::doExecute()
     // TODO: branches, signed/unsigned comparisons
 
 }
-
+*/
 void Simulator::doMemory()
 {
     if (execute_reg.isNop())

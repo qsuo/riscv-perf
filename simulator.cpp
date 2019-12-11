@@ -24,10 +24,16 @@ void Simulator::doFetch()
     PCReg preg;
     ExecuteReg ereg = execute_reg.get();
     DecodeReg dreg = decode_reg.get();
-    if(ereg.flags.insType == I_BR)  // TODO: Add NOPs
+    if (ereg.flags.insType == I_BR && ereg.cmp_res)
+    {
         preg.pc = ereg.alu_res;
-    else if(dreg.flags.insType == I_JAL)
+        fetch_reg.setNop();
+    }
+    else if (dreg.flags.insType == I_JAL)
+    {
         preg.pc = dreg.pc + (dreg.imm << 1);
+        fetch_reg.setNop();
+    }
     /*
     else if(dreg.flags.insType == I_JALR)
         preg.pc = ereg.alu_res;

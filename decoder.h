@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <unordered_map>
 
+#include "control_unit.h"
 
 class Decoder
 {
@@ -67,7 +68,7 @@ public:
             SHAMT       = 0b00000001'11110000'00000000'00000000,
             FUNCT7      = 0b11111110'00000000'00000000'00000000,
             I_IMM11_0   = 0b11111111'11110000'00000000'00000000,
-            CSR         = 0b11111111'11110000'00000000'00000000, 
+            CSR         = 0b11111111'11110000'00000000'00000000,
             S_IMM11_5   = 0b11111110'00000000'00000000'00000000,
             S_IMM4_0    = 0b00000000'00000000'00001111'10000000,
             B_IMM12     = 0b10000000'00000000'00000000'00000000,
@@ -105,6 +106,8 @@ public:
         uint32_t J_imm10_1;
         uint32_t J_imm11;
         uint32_t J_imm19_12;
+
+        ControlUnit::Output flags;
 
         uint32_t getIImm();
         uint32_t getSImm();

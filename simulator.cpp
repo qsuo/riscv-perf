@@ -67,6 +67,7 @@ DecodeReg Simulator::getDecoding()
     dreg.d1 = out.d1;
     dreg.d2 = out.d2;
     dreg.imm = decoding.getImm(type);
+    dreg.flags = decoding.flags;
 
     return dreg;
 }

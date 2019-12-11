@@ -19,7 +19,23 @@ enum Opcode
     SYSTEM      = 0b1110011
 };
 
-enum AluOp { ADD, SUB };
+enum AluOp { ADD = 0b000,
+             XOR = 0b100,
+             OR  = 0b110,
+             AND = 0b111,
+             LT  = 0b010,
+             LTU = 0b011,
+             SLL = 0b001,
+             SRL = 0b101,
+             SUB, SRA };
+
+enum CmpOp { BEQ  = 0b000,
+             BNE  = 0b001,
+             BLT  = 0b100,
+             BLTU = 0b110,
+             BGE  = 0b101,
+             BGEU = 0b111 };
+
 enum InsType { I_ALU, I_LD, I_ST, I_JAL, I_JALR, I_BR };
 
 class ControlUnit
@@ -34,8 +50,8 @@ public:
     struct Output
     {
         int aluOp;
+        int cmpOp;
         int aluSrc2;
-        int brnCond;
         int memWe;
         int we;
         int wbCtrl;

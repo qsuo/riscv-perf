@@ -129,5 +129,60 @@ Decoder::Decoding Decoder::getDecoding(uint32_t encoding)
         .J_imm19_12 = applyMask(encoding, Mask::J_IMM19_12)
     };
 
+    auto opcode = decoding.opcode;
+    ControlUnit::Output flags = {};
+    switch (opcode)
+    {
+        case OP_IMM:
+            flags.insType = I_ALU;
+            flags.aluSrc2 = 1;  // src2 is imm
+            flags.we = 1;
+            flags.aluOp = decoding.funct3;
+            if (flags.aluOp == SRL && decoding.funct7 != 0)
+                flags.aluOp = SRA;
+            break;
+        case OP:
+            flags.insType = I_ALU;
+            flags.we = 1;
+            flags.aluOp = decoding.funct3;
+            if (flags.aluOp == ADD && decoding.funct7 != 0)
+                flags.aluOp = SUB;
+            else if (flags.aluOp == SRL && decoding.funct7 != 0)
+                flags.aluOp = SRA;
+
+            break;
+        case JAL:
+            flags.insType = I_JAL;
+            flags.aluSrc2 = 1;
+            flags.we = 1;
+            break;
+        case JALR:
+            flags.insType = I_JALR;
+            flags.aluSrc2 = 1;
+            flags.we = 1;
+            break;
+        case BRANCH:
+            flags.insType = I_BR;
+            flags.cmpOp = decoding.funct3;
+            break;
+        case LOAD:
+            flags.insType = I_LD;
+            flags.we = 1;
+            flags.wbCtrl = 1;
+            flags.aluOp = ADD;
+            break;
+        case STORE:
+            flags.insType = I_ST;
+            flags.memWe = 1;
+            flags.aluOp = ADD;
+            break;
+        default:
+            assert(0 && "Unrecognised instruction");
+            break;
+    }
+    decoding.flags = flags;
+
+    // aluOp, brnCond
+
     return decoding;
 }

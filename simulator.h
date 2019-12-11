@@ -19,7 +19,7 @@ public:
     void doMemory();
     void doWriteBack();
 
-    bool stall_condition(DecodeReg& de, ExecuteReg& ex);
+    bool stall_condition(DecodeReg& de);
 
 private:
     Memory memory;

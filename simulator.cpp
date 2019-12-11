@@ -12,6 +12,10 @@ void Simulator::doFetch()
     Imem::Input in = { .a = pc.get().pc };
     Imem::Output out = imem.operate(in);
 
+    DecodeReg current_decoding = getDecoding();
+    if (stall_condition(current_decoding))
+        return;
+
     FetchReg freg = {
         .pc = pc.get().pc,
         .encoding = out.d};
@@ -20,7 +24,7 @@ void Simulator::doFetch()
     PCReg preg;
     ExecuteReg ereg = execute_reg.get();
     DecodeReg dreg = decode_reg.get();
-    if(ereg.flags.insType == I_BR)
+    if(ereg.flags.insType == I_BR)  // TODO: Add NOPs
         preg.pc = ereg.alu_res;
     else if(dreg.flags.insType == I_JAL)
         preg.pc = dreg.pc + (dreg.imm << 1);
@@ -33,7 +37,7 @@ void Simulator::doFetch()
     pc.set(preg);
 }
 
-decoding getDecoding()
+DecodeReg Simulator::getDecoding()
 {
     FetchReg freg = fetch_reg.get();
 
@@ -72,7 +76,10 @@ void Simulator::doDecode()
     // TODO: Bypasses
     DecodeReg dreg = getDecoding();
 
-    decode_reg.set(dreg);
+    if (stall_condition(dreg))
+        decode_reg.setNop();
+    else
+        decode_reg.set(dreg);
 }
 
 void Simulator::doExecute()
@@ -143,11 +150,12 @@ void Simulator::doWriteBack()
     regfile.operate(out);
 }
 
-bool Simulator::stall_condition(DecodeReg& de, ExecuteReg& ex)
+bool Simulator::stall_condition(DecodeReg& dreg)
 {
-    bool res = ex.flags.insType == I_LD && de.flags.insType != I_JAL;
-    res &= (de.rs1 == ex.rd) ||
-           (de.rs2 == ex.rd && de.flags.aluSrc2 == 0);
+    const auto& ereg = execute_reg.get();
+    bool res = ereg.flags.insType == I_LD && dreg.flags.insType != I_JAL;
+    res &= (dreg.rs1 == ereg.rd) ||
+           (dreg.rs2 == ereg.rd && dreg.flags.aluSrc2 == 0);
 
     return res;
 }

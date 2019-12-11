@@ -15,7 +15,8 @@ public:
     ControlReg() {}
     ControlReg(RegType& data) : data_(data) {}
 
-    RegType get() const { return data_; }
+    RegType get() { return data_; }
+    const RegType& get() const { return data_; }
     void set(RegType& data)
     {
         data_ = data;

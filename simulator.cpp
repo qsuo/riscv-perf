@@ -87,9 +87,24 @@ void Simulator::doDecode()
     DecodeReg dreg = getDecoding();
 
     if (stall_condition(dreg))
+    {
         decode_reg.setNop();
-    else
-        decode_reg.set(dreg);
+        return;
+    }
+    const auto& ereg = execute_reg.get();
+    const auto& mreg = memory_reg.get();
+
+    if (memory_bypass(dreg) == 1)
+        dreg.d1 = mreg.wb_d;
+    else if (memory_bypass(dreg) == 2)
+        dreg.d2 = mreg.wb_d;
+
+    if (execute_bypass(dreg) == 1)
+        dreg.d1 = ereg.alu_res;
+    else if (execute_bypass(dreg) == 2)
+        dreg.d2 = ereg.alu_res;
+
+    decode_reg.set(dreg);
 }
 
 void Simulator::doExecute()
@@ -229,4 +244,28 @@ bool Simulator::stall_condition(DecodeReg& dreg)
            (dreg.rs2 == ereg.rd && dreg.flags.aluSrc2 == 0);
 
     return res;
+}
+
+int Simulator::execute_bypass(DecodeReg& dreg)
+{
+    const auto& ereg = execute_reg.get();
+    if (dreg.flags.insType == I_JAL || !ereg.flags.we)
+        return 0;
+    if (dreg.rs1 == ereg.rd)
+        return 1;
+    if (dreg.rs2 == ereg.rd && dreg.flags.aluSrc2 == 0)
+        return 2;
+    return 0;
+}
+
+int Simulator::memory_bypass(DecodeReg& dreg)
+{
+    const auto& mreg = memory_reg.get();
+    if (mreg.flags.insType != I_LD || dreg.flags.insType == I_JAL)
+        return 0;
+    if (dreg.rs1 == mreg.rd)
+        return 1;
+    if (dreg.rs2 == mreg.rd && dreg.flags.aluSrc2 == 0)
+        return 2;
+    return 0;
 }

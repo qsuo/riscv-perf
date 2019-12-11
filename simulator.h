@@ -19,7 +19,9 @@ public:
     void doMemory();
     void doWriteBack();
 
-    bool stall_condition(DecodeReg& de);
+    bool stall_condition(DecodeReg& dreg);
+    int execute_bypass(DecodeReg& dreg);
+    int memory_bypass(DecodeReg& dreg);
 
 private:
     Memory memory;

@@ -69,7 +69,6 @@ struct MemoryReg
     flags_t flags = {};
     uint8_t rd = 0;   // write back address
     uint32_t wb_d = 0;  // write back data (alu_res or result of memory read)
-    uint32_t wb_a = 0;
     uint32_t wb_we = 0;
 };
 

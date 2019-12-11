@@ -32,45 +32,45 @@ private:
 
 struct PCReg
 {
-    address_t pc;
+    address_t pc = 0;
 };
 
 struct FetchReg
 {
-    address_t pc;
-    uint32_t encoding;
+    address_t pc = 0;
+    uint32_t encoding = 0;
 };
 
 struct DecodeReg
 {
-    address_t pc;
-    flags_t flags;
-    uint8_t rs1;
-    uint8_t rs2;
-    uint8_t rd;     // write back reg
-    uint32_t d1;    // data1
-    uint32_t d2;    // data2
-    uint32_t imm;   // type
+    address_t pc = 0;
+    flags_t flags = {};
+    uint8_t rs1 = 0;
+    uint8_t rs2 = 0;
+    uint8_t rd = 0;     // write back reg
+    uint32_t d1 = 0;    // data1
+    uint32_t d2 = 0;    // data2
+    uint32_t imm = 0;   // type
 };
 
 struct ExecuteReg
 {
-    address_t pc;
-    flags_t flags;
-    uint32_t alu_res;
-    bool cmp_res;
-    uint32_t wd;    // write data (for memory)
-    uint8_t rd;   // write back address
+    address_t pc = 0;
+    flags_t flags = {};
+    uint32_t alu_res = 0;
+    bool cmp_res = 0;
+    uint32_t wd = 0;    // write data (for memory)
+    uint8_t rd = 0;   // write back address
 };
 
 struct MemoryReg
 {
-    address_t pc;
-    flags_t flags;
-    uint8_t rd;   // write back address
-    uint32_t wb_d;  // write back data (alu_res or result of memory read)
-    uint32_t wb_a;
-    uint32_t wb_we;
+    address_t pc = 0;
+    flags_t flags = {};
+    uint8_t rd = 0;   // write back address
+    uint32_t wb_d = 0;  // write back data (alu_res or result of memory read)
+    uint32_t wb_a = 0;
+    uint32_t wb_we = 0;
 };
 
 #endif

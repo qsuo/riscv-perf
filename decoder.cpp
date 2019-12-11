@@ -39,7 +39,6 @@ uint32_t Decoder::Decoding::getIImm()
     return imm;
 }
 
-
 uint32_t Decoder::Decoding::getSImm()
 {
     uint32_t imm4_0 = S_imm4_0;
@@ -104,7 +103,6 @@ uint32_t Decoder::Decoding::getImm(Type type)
     }
 }
 
-
 Decoder::Decoding Decoder::getDecoding(uint32_t encoding)
 {
     Decoding decoding = {
@@ -133,5 +131,3 @@ Decoder::Decoding Decoder::getDecoding(uint32_t encoding)
 
     return decoding;
 }
-
-

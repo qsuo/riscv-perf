@@ -34,10 +34,11 @@ void Simulator::doFetch()
         preg.pc = dreg.pc + (dreg.imm << 1);
         fetch_reg.setNop();
     }
-    /*
-    else if(dreg.flags.insType == I_JALR)
+    else if (ereg.flags.insType == I_JALR)
+    {
         preg.pc = ereg.alu_res;
-    */
+        fetch_reg.setNop();
+    }
     else
         preg.pc += 4;
     pc.set(preg);

@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "simulator.h"
 #include "decoder.h"
 
@@ -98,29 +100,90 @@ void Simulator::doExecute()
         return;
     }
 
-    DecodeReg in = decode_reg.get();
-    uint32_t src1 = in.d1;
-    uint32_t src2 = in.d2; // src for alu and wd for memory
+    DecodeReg dreg = decode_reg.get();
+    int32_t src1 = dreg.d1;
+    int32_t src2 = dreg.d2; // src for alu and wd for memory
     uint32_t alu_res;
     bool cmp_res;
+    auto type = dreg.flags.insType;
+    auto aluOp = dreg.flags.aluOp;
+    auto cmpOp = dreg.flags.cmpOp;
 
-    if (in.flags.aluSrc2 == 1)
-        src2 = in.imm;   // TODO: process immediate
+    if (dreg.flags.aluSrc2 == 1)
+        src2 = dreg.imm;
 
-    switch (in.flags.aluOp)
+    if (type == I_ALU || type == I_LD || type == I_ST)
     {
-        case AluOp::ADD:
-            alu_res = src1 + src2;
-            break;
-        case AluOp::SUB:
-            alu_res = src1 - src2;
-            break;
-        default:
-            break;
+        switch (aluOp)
+        {
+            case ADD:
+                alu_res = src1 + src2;
+                break;
+            case SUB:
+                alu_res = src1 - src2;
+                break;
+            case XOR:
+                alu_res = src1 ^ src2;
+                break;
+            case OR:
+                alu_res = src1 | src2;
+                break;
+            case AND:
+                alu_res = src1 & src2;
+                break;
+            case LT:
+                alu_res = (src1 < src2) ? 1 : 0;
+                break;
+            case LTU:
+                alu_res = ((uint32_t)src1 < (uint32_t)src2) ? 1 : 0;
+                break;
+            case SLL:
+                alu_res = src1 << src2;
+                break;
+            case SRL:
+                alu_res = (uint32_t)src1 >> src2;
+                break;
+            case SRA:
+                alu_res = src1 >> src2;
+                break;
+            default:
+                assert(0 && "Invalid AluOp");
+                break;
+        }
     }
+    else if (type == I_BR)
+    {
+        switch (cmpOp)
+        {
+            case BEQ:
+                cmp_res = (src1 == src2);
+                break;
+            case BNE:
+                cmp_res = (src1 != src2);
+                break;
+            case BLT:
+                cmp_res = (src1 < src2);
+                break;
+            case BLTU:
+                cmp_res = ((uint32_t)src1 < (uint32_t)src2);
+                break;
+            case BGE:
+                cmp_res = (src1 >= src2);
+                break;
+            case BGEU:
+                cmp_res = ((uint32_t)src1 >= (uint32_t)src2);
+                break;
+            default:
+                assert(0 && "Invalid CmpOp");
+                break;
+        }
+        alu_res = dreg.pc + (dreg.imm << 1);
+    }
+    else if (type == I_JALR)
+        alu_res = (src1 + dreg.imm) & ~1u;
 
-    ExecuteReg out = {.pc = in.pc, .flags = in.flags, .alu_res = alu_res,
-                      .cmp_res = cmp_res, .wd = src2, .rd = in.rd};
+    ExecuteReg out = {.pc = dreg.pc, .flags = dreg.flags, .alu_res = alu_res,
+                      .cmp_res = cmp_res, .wd = src2, .rd = dreg.rd};
     execute_reg.set(out);
     // TODO: branches, signed/unsigned comparisons
 

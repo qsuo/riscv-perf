@@ -27,7 +27,8 @@ enum AluOp { ADD = 0b000,
              LTU = 0b011,
              SLL = 0b001,
              SRL = 0b101,
-             SUB, SRA };
+             SUB = 0b1000,
+             SRA = 0b1001};
 
 enum CmpOp { BEQ  = 0b000,
              BNE  = 0b001,

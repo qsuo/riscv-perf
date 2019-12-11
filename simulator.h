@@ -11,6 +11,8 @@ class Simulator
 {
 public:
     Simulator(uint32_t memory_size);
+    void load(const char* name);
+    void run();
 
     DecodeReg getDecoding();
     void doFetch();
@@ -19,11 +21,11 @@ public:
     void doMemory();
     void doWriteBack();
 
+ private:
     bool stall_condition(DecodeReg& dreg);
     int execute_bypass(DecodeReg& dreg);
     int memory_bypass(DecodeReg& dreg);
 
-private:
     Memory memory;
     Imem imem;
     RegFile regfile;

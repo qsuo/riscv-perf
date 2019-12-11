@@ -7,12 +7,12 @@ Simulator::Simulator(uint32_t memory_size)
     imem.attachMemory(&memory);
 }
 
-void Simulator::doFetch() 
+void Simulator::doFetch()
 {
     Imem::Input in = { .a = pc.get().pc };
     Imem::Output out = imem.operate(in);
 
-    FetchReg freg = { 
+    FetchReg freg = {
         .pc = pc.get().pc,
         .encoding = out.d};
     fetch_reg.set(freg);
@@ -33,39 +33,22 @@ void Simulator::doFetch()
     pc.set(preg);
 }
 
-
-
-void Simulator::doDecode()
+decoding getDecoding()
 {
-
-    ExecuteReg ex = execute_reg.get();
-    if ((ex.flags.insType == I_BR && ex.cmp_res) ||
-        ex.flags.insType == I_JALR || fetch_reg.isNop())
-    {
-        decode_reg.setNop();
-        return;
-    }
-    // TODO: Bypasses
-
-
     FetchReg freg = fetch_reg.get();
-    MemoryReg mreg = memory_reg.get(); 
-
 
     Decoder decoder;
     Decoder::Decoding decoding = decoder.getDecoding(freg.encoding);
 
     Decoder::Type type = decoder.instrType[decoding.opcode];
     RegFile::Input in = {
-        .a1 = decoding.rs1, 
+        .a1 = decoding.rs1,
         .a2 = decoding.rs2};
-    in.wb_a = mreg.wb_a;
-    in.wb_d = mreg.wb_d;
-    in.wb_we = mreg.wb_we;
+    in.wb_we = 0;
 
     RegFile::Output out = regfile.operate(in);
     DecodeReg dreg;
-    
+
     dreg.pc = freg.pc;
     dreg.rs1 = in.a1;
     dreg.rs2 = in.a2;
@@ -74,10 +57,23 @@ void Simulator::doDecode()
     dreg.d2 = out.d2;
     dreg.imm = decoding.getImm(type);
 
-    decode_reg.set(dreg);
-
+    return dreg;
 }
 
+void Simulator::doDecode()
+{
+    ExecuteReg ex = execute_reg.get();
+    if ((ex.flags.insType == I_BR && ex.cmp_res) ||
+        ex.flags.insType == I_JALR || fetch_reg.isNop())
+    {
+        decode_reg.setNop();
+        return;
+    }
+    // TODO: Bypasses
+    DecodeReg dreg = getDecoding();
+
+    decode_reg.set(dreg);
+}
 
 void Simulator::doExecute()
 {
